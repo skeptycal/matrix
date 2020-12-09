@@ -23,23 +23,45 @@ func getEnvConnectionString(key string) (string, error) {
 	return value, nil
 }
 
-// Check performs a connection check on the mysql database connection
-func Check() {
+func dbConnect() (*sql.DB, error) {
 	mysql_username, err := getEnvConnectionString(mySqlUserVariable)
 	if err != nil {
-		log.Info(err)
+		log.Error(err)
 	}
 
 	log.Info("mysql username: ", mysql_username)
 
-	Db, err := sql.Open("mysql", mysql_username)
+	// Open database connection.
+	db, err := sql.Open("mysql", mysql_username)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
+
 	// See "Important settings" section.
-	Db.SetConnMaxLifetime(time.Minute * 3)
-	Db.SetMaxOpenConns(10)
-	Db.SetMaxIdleConns(10)
+	db.SetConnMaxLifetime(time.Minute * 3)
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(10)
+	return db, nil
+}
+
+// Check performs a connection check on the mysql database connection
+func Check() {
+
+	db, err := dbConnect()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// defer the close until  the main function is done
+	defer db.Close()
+
+	// perform query test
+	response, err := db.Query("SHOW DATABASES;")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Info("MySQL query response: ", response)
 
 }
 

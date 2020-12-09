@@ -1,52 +1,21 @@
 package main
 
 import (
-	"database/sql"
-
 	log "github.com/sirupsen/logrus"
 	matrix "github.com/skeptycal/matrix"
 )
 
 func main() {
+	log.SetLevel(log.InfoLevel)
 	log.Info("Go MySQL connection check")
 
 	matrix.Check()
-
-	// Open up our database connection.
-	// I've set up a database on my local machine using phpmyadmin.
-	// The database is called testDb
-	db, err := sql.Open("mysql", "username:password@tcp(127.0.0.1:3306)/test")
-
-	// if there is an error opening the connection, handle it
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// defer the close until  the main function is done
-	defer db.Close()
-
-	// perform query test
-	response, err := db.Query("SHOW DATABASES;")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Info("MySQL query response: %v", response)
-
-	// perform a db.Query insert
-	insert, err := db.Query("INSERT INTO test VALUES ( 2, 'TEST' )")
-
-	// if there is an error inserting, handle it
-	if err != nil {
-		log.Fatal(err)
-	}
-	// be careful deferring Queries if you are using transactions
-	defer insert.Close()
 
 }
 
 // Notes:
 /* Matrix - an organizational map based on the Eisenhower Matrix.
+mysql - https://www.tutorialspoint.com/mysql/mysql-create-tables.htm
 
 // -----------------------------------------------------------> todo - list of steps to complete
 
@@ -156,6 +125,18 @@ SHOW TABLES;
 
 SHOW FULL TABLES;
 SHOW TABLES FROM sys;
+
+SELECT – selects data from the database.
+DELETE – removes data from the database.
+UPDATE – overwrites data in the database.
+CREATE DATABASE – creates a new database.
+INSERT INTO – uploads new data into the database.
+CREATE TABLE – creates a new table.
+ALTER DATABASE – changes the attributes, files or filegroups of the database.
+CREATE INDEX – creates an index, or a search key.
+DROP INDEX – deletes an index.
+ALTER TABLE – changes the attributes or entries of a table.
+
 
 \js
 session
