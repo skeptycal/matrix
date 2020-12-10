@@ -14,25 +14,33 @@ const (
 	mySqlUserVariable = "MYSQL_USERNAME"
 )
 
+type dbConfig struct {
+	userName string
+	host     string
+}
+
 // getEnvConnectionString - get environment variable from mySqlUserVariable
 func getEnvConnectionString(key string) (string, error) {
-	value, ok := os.LookupEnv(key)
-	if !ok {
+	value := os.Getenv(key)
+	if value == "" {
 		return "", fmt.Errorf("environment variable <%v> not found", key)
 	}
+
+	value = value + "/test"
+
 	return value, nil
 }
 
 func dbConnect() (*sql.DB, error) {
-	mysql_username, err := getEnvConnectionString(mySqlUserVariable)
+	mysqlConnectionString, err := getEnvConnectionString(mySqlUserVariable)
 	if err != nil {
 		log.Error(err)
 	}
 
-	log.Info("mysql username: ", mysql_username)
+	log.Info("mysql username: ", mysqlConnectionString)
 
 	// Open database connection.
-	db, err := sql.Open("mysql", mysql_username)
+	db, err := sql.Open("mysql", mysqlConnectionString)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +54,6 @@ func dbConnect() (*sql.DB, error) {
 
 // Check performs a connection check on the mysql database connection
 func Check() {
-
 	db, err := dbConnect()
 	if err != nil {
 		log.Fatal(err)
